@@ -125,7 +125,8 @@ This is a string value contains the type of event can hold the following values:
 
 Type               | What it does
 -------------------|---------------
-`disable_bot`      | This event is sent when authentication with a team fails (either due to a wrong token or an expired token).  `message_new`    | This is event is sent When a new message is received by Relax. *Note*: Only events for messages intended to Relax (so an @-mention to the bot or a direct message) are sent.
+`disable_bot`      | This event is sent when authentication with a team fails (either due to a wrong token or an expired token).
+`message_new`    | This is event is sent When a new message is received by Relax. *Note*: Only events for messages intended to Relax (so an @-mention to the bot or a direct message) are sent.
 `message_edited`   | This event is sent when a message has been edited.
 `message_deleted`  | This event is sent when a message has been deleted.
 `reaction_added`   | This event is sent when a reaction has been added to a message.
