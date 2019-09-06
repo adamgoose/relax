@@ -588,7 +588,7 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.User = c.data.Users[userId]
 			msg.Channel = c.data.Channels[channelId]
 
-			c.sendEvent("message_deleted", msg, msg.Text, msg.DeletedTimestamp, msg.Timestamp, msg.threadTimestamp)
+			c.sendEvent("message_deleted", msg, msg.Text, msg.DeletedTimestamp, msg.Timestamp, msg.ThreadTimestamp)
 
 		case "message_changed":
 			embeddedMessage := msg.EmbeddedMessage()
@@ -597,7 +597,7 @@ func (c *Client) handleMessage(msg *Message) {
 				userId = embeddedMessage.UserId()
 				msg.User = c.data.Users[userId]
 				msg.Channel = c.data.Channels[channelId]
-				c.sendEvent("message_edited", msg, embeddedMessage.Text, embeddedMessage.Timestamp, msg.Timestamp, msg.threadTimestamp)
+				c.sendEvent("message_edited", msg, embeddedMessage.Text, embeddedMessage.Timestamp, msg.Timestamp, msg.ThreadTimestamp)
 			}
 
 		// simple message
@@ -614,7 +614,7 @@ func (c *Client) handleMessage(msg *Message) {
 					"msg.Channel": msg.Channel,
 				}).Info("Sending message_new for this user and channel")
 
-				c.sendEvent("message_new", msg, msg.Text, msg.Timestamp, msg.Timestamp, msg.threadTimestamp)
+				c.sendEvent("message_new", msg, msg.Text, msg.Timestamp, msg.Timestamp, msg.ThreadTimestamp)
 			}
 		}
 
@@ -640,7 +640,7 @@ func (c *Client) handleMessage(msg *Message) {
 				}
 			}
 
-			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.threadTimestamp)
+			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp)
 		}
 
 	case "reaction_removed":
@@ -652,7 +652,7 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.User = c.data.Users[userId]
 			msg.Channel = c.data.Channels[channelId]
 
-			c.sendEvent("reaction_removed", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.threadTimestamp)
+			c.sendEvent("reaction_removed", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp)
 		}
 
 	case "team_join":
