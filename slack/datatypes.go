@@ -93,6 +93,7 @@ type Message struct {
 	Text             string       `json:"text"`
 	Timestamp        string       `json:"ts"`
 	DeletedTimestamp string       `json:"deleted_ts"`
+	ThreadTimestamp  string       `json:"thread_ts"`
 	Reaction         string       `json:"reaction"`
 	Hidden           bool         `json:"hidden"`
 	Attachments      []Attachment `json:"attachments"`
@@ -216,16 +217,17 @@ type User struct {
 // for e.g. when a message is received, an emoji reaction is added, etc.
 // an event is sent back to the user.
 type Event struct {
-	Type           string       `json:"type"`
-	UserUid        string       `json:"user_uid"`
-	ChannelUid     string       `json:"channel_uid"`
-	TeamUid        string       `json:"team_uid"`
-	Im             bool         `json:"im"`
-	Text           string       `json:"text"`
-	RelaxBotUid    string       `json:"relax_bot_uid"`
-	Timestamp      string       `json:"timestamp"`
-	Provider       string       `json:"provider"`
-	EventTimestamp string       `json:"event_timestamp"`
-	Namespace      string       `json:"namespace"`
-	Attachments    []Attachment `json:"attachments"`
+	Type            string       `json:"type"`
+	UserUid         string       `json:"user_uid"`
+	ChannelUid      string       `json:"channel_uid"`
+	TeamUid         string       `json:"team_uid"`
+	Im              bool         `json:"im"`
+	Text            string       `json:"text"`
+	RelaxBotUid     string       `json:"relax_bot_uid"`
+	Timestamp       string       `json:"timestamp"`
+	Provider        string       `json:"provider"`
+	EventTimestamp  string       `json:"event_timestamp"`
+	ThreadTimestamp string       `json:"thread_timestamp"`
+	Namespace       string       `json:"namespace"`
+	Attachments     []Attachment `json:"attachments"`
 }
