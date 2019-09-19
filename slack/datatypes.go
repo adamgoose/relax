@@ -97,6 +97,7 @@ type Message struct {
 	Reaction         string       `json:"reaction"`
 	Hidden           bool         `json:"hidden"`
 	Attachments      []Attachment `json:"attachments"`
+	Files      			 []File 			`json:"files"`
 	// For some events, such as message_changed, message_deleted, etc.
 	// the Timestamp field contains the timestamp of the original message
 	// so to make sure only one instance of the event is sent to REDIS_QUEUE_WEB
@@ -230,4 +231,5 @@ type Event struct {
 	ThreadTimestamp string       `json:"thread_timestamp"`
 	Namespace       string       `json:"namespace"`
 	Attachments     []Attachment `json:"attachments"`
+	Files     			[]File 			 `json:"files"`
 }
