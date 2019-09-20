@@ -186,7 +186,7 @@ func (c *Client) Start() error {
 			msg.User = User{}
 			msg.Channel = Channel{}
 
-			err := c.sendEvent("disable_bot", &msg, "", "", "", "", [])
+			err := c.sendEvent("disable_bot", &msg, "", "", "", "", map[interfacfe{}]string{ map[interface{}]string })
 			if err != nil {
 				return err
 			}
@@ -289,9 +289,11 @@ func (c *Client) callSlack(method string, params url.Values, expectedStatusCode 
 	return c.callAPI(host, method, params, expectedStatusCode)
 }
 
+
+
 // sendEvent is a utility function that wraps event data in an Event struct
 // and sends them back to the user via Redis.
-func (c *Client) sendEvent(responseType string, msg *Message, text string, timestamp string, eventTimestamp string, threadTimestamp string, files []hash) error {
+func (c *Client) sendEvent(responseType string, msg *Message, text string, timestamp string, eventTimestamp string, threadTimestamp string, files []map[interface{}]string) error {
 	// If the eventTimestamp blank, then set a timestamp to the currentTime (this typically means)
 	// that it is the responsibility of the client to make sure that events are handled idempotently
 	if eventTimestamp == "" {
@@ -641,9 +643,9 @@ func (c *Client) handleMessage(msg *Message) {
 				}
 			}
 
-			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, [])
-		}
-
+			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, map[interfacfe{}]string{ map[interface{}]string })
+					}
+			}
 	case "reaction_removed":
 		embeddedItem := msg.EmbeddedItem()
 		if embeddedItem != nil {
@@ -653,13 +655,13 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.User = c.data.Users[userId]
 			msg.Channel = c.data.Channels[channelId]
 
-			c.sendEvent("reaction_removed", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, [])
+			c.sendEvent("reaction_removed", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, map[interfacfe{}]string{ map[interface{}]string })
 		}
 
 	case "team_join":
 		if err := json.Unmarshal(msg.RawUser, &msg.User); err == nil {
 			c.data.Users[msg.User.Id] = msg.User
-			c.sendEvent("team_joined", msg, "", "", "", "", [])
+			c.sendEvent("team_joined", msg, "", "", "", "", map[interfacfe{}]string{ map[interface{}]string })
 		}
 
 	case "im_created":
@@ -668,7 +670,7 @@ func (c *Client) handleMessage(msg *Message) {
 			c.data.Channels[msg.Channel.Id] = msg.Channel
 			msg.User = c.data.Users[msg.UserId()]
 
-			c.sendEvent("im_created", msg, "", "", "", "", [])
+			c.sendEvent("im_created", msg, "", "", "", "", map[interfacfe{}]string{ map[interface{}]string })
 		}
 
 	case "group_joined":
@@ -687,7 +689,7 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.Channel = channel
 			// Don't send channel joined messages for upto a minute
 			timestamp := fmt.Sprintf("channel-joined-%d-%s", (time.Now().Unix()/60)*60, channel.Id)
-			c.sendEvent("channel_joined", msg, "", timestamp, timestamp, timestamp, [])
+			c.sendEvent("channel_joined", msg, "", timestamp, timestamp, timestamp, map[interfacfe{}]string{ map[interface{}]string })
 		}
 	}
 }
