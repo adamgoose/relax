@@ -121,7 +121,7 @@ type File struct {
 	Pjpeg                  string   `json:"pjpeg"`
 	Permalink              string   `json:"permalink"`
 	PermalinkPublic        string   `json:"permalink_public"`
-	HasRichPreview         int64    `json:"has_rich_preview"`
+	HasRichPreview         bool     `json:"has_rich_preview"`
 }
 
 // Message represents a message on Slack
