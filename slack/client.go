@@ -186,7 +186,7 @@ func (c *Client) Start() error {
 			msg.User = User{}
 			msg.Channel = Channel{}
 
-			err := c.sendEvent("disable_bot", &msg, "", "", "", "", map[interfacfe{}]string{ map[interface{}]string })
+			err := c.sendEvent("disable_bot", &msg, "", "", "", "", msg.Files)
 			if err != nil {
 				return err
 			}
@@ -643,7 +643,7 @@ func (c *Client) handleMessage(msg *Message) {
 				}
 			}
 
-			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, map[interfacfe{}]string{ map[interface{}]string })
+			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, msg.Files)
 					}
 			}
 	case "reaction_removed":
@@ -655,13 +655,13 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.User = c.data.Users[userId]
 			msg.Channel = c.data.Channels[channelId]
 
-			c.sendEvent("reaction_removed", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, map[interfacfe{}]string{ map[interface{}]string })
+			c.sendEvent("reaction_removed", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, msg.Files)
 		}
 
 	case "team_join":
 		if err := json.Unmarshal(msg.RawUser, &msg.User); err == nil {
 			c.data.Users[msg.User.Id] = msg.User
-			c.sendEvent("team_joined", msg, "", "", "", "", map[interfacfe{}]string{ map[interface{}]string })
+			c.sendEvent("team_joined", msg, "", "", "", "", msg.Files)
 		}
 
 	case "im_created":
@@ -670,7 +670,7 @@ func (c *Client) handleMessage(msg *Message) {
 			c.data.Channels[msg.Channel.Id] = msg.Channel
 			msg.User = c.data.Users[msg.UserId()]
 
-			c.sendEvent("im_created", msg, "", "", "", "", map[interfacfe{}]string{ map[interface{}]string })
+			c.sendEvent("im_created", msg, "", "", "", "", msg.Files)
 		}
 
 	case "group_joined":
@@ -689,7 +689,7 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.Channel = channel
 			// Don't send channel joined messages for upto a minute
 			timestamp := fmt.Sprintf("channel-joined-%d-%s", (time.Now().Unix()/60)*60, channel.Id)
-			c.sendEvent("channel_joined", msg, "", timestamp, timestamp, timestamp, map[interfacfe{}]string{ map[interface{}]string })
+			c.sendEvent("channel_joined", msg, "", timestamp, timestamp, timestamp, msg.Files)
 		}
 	}
 }
