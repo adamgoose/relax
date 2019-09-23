@@ -644,8 +644,7 @@ func (c *Client) handleMessage(msg *Message) {
 			}
 
 			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, msg.Files)
-					}
-			}
+		}
 	case "reaction_removed":
 		embeddedItem := msg.EmbeddedItem()
 		if embeddedItem != nil {
