@@ -291,7 +291,7 @@ func (c *Client) callSlack(method string, params url.Values, expectedStatusCode 
 
 // sendEvent is a utility function that wraps event data in an Event struct
 // and sends them back to the user via Redis.
-func (c *Client) sendEvent(responseType string, msg *Message, text string, timestamp string, eventTimestamp string, threadTimestamp string, files []map[interface{}]string) error {
+func (c *Client) sendEvent(responseType string, msg *Message, text string, timestamp string, eventTimestamp string, threadTimestamp string, files []File) error {
 	// If the eventTimestamp blank, then set a timestamp to the currentTime (this typically means)
 	// that it is the responsibility of the client to make sure that events are handled idempotently
 	if eventTimestamp == "" {
