@@ -103,7 +103,7 @@ type File struct {
 	IsPublic               bool     `json:"is_public"`
 	PublicUrlShared        bool     `json:"public_url_shared"`
 	DisplayAsBot           bool     `json:"display_as_bot"`
-	username               string   `json:"username"`
+	Username               string   `json:"username"`
 	UrlPrivate             string   `json:"url_private"`
 	UrlPrivateDownload     string   `json:"url_private_download"`
 	Thumb64                string   `json:"thumb_64"`
