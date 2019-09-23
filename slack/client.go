@@ -289,8 +289,6 @@ func (c *Client) callSlack(method string, params url.Values, expectedStatusCode 
 	return c.callAPI(host, method, params, expectedStatusCode)
 }
 
-
-
 // sendEvent is a utility function that wraps event data in an Event struct
 // and sends them back to the user via Redis.
 func (c *Client) sendEvent(responseType string, msg *Message, text string, timestamp string, eventTimestamp string, threadTimestamp string, files []map[interface{}]string) error {
@@ -312,7 +310,7 @@ func (c *Client) sendEvent(responseType string, msg *Message, text string, times
 		ThreadTimestamp: threadTimestamp,
 		EventTimestamp:  eventTimestamp,
 		Attachments:     msg.Attachments,
-		Files:     			 files,
+		Files:           files,
 		Namespace:       c.Namespace,
 		Provider:        "slack",
 	}
@@ -645,6 +643,7 @@ func (c *Client) handleMessage(msg *Message) {
 
 			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, msg.Files)
 		}
+
 	case "reaction_removed":
 		embeddedItem := msg.EmbeddedItem()
 		if embeddedItem != nil {

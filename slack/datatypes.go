@@ -85,6 +85,45 @@ type Attachment struct {
 	Actions        []Action `json:"actions"`
 }
 
+type File struct {
+	Id                     string   `json:"id"`
+	Created                int64    `json:"created"`
+	Timestamp              int64    `json:"timestamp"`
+	Name                   string   `json:"name"`
+	Title                  string   `json:"title"`
+	Mimetype               string   `json:"mimetype"`
+	Filetype               string   `json:"filetype"`
+	Pretty_type            string   `json:"pretty_type"`
+	User                   string   `json:"user"`
+	Editable               bool     `json:"editable"`
+	Size                   int64    `json:"size"`
+	Mode                   string   `json:"mode"`
+	IsExternal             bool     `json:"is_external"`
+	ExternalType           string   `json:"external_type"`
+	IsPublic               bool     `json:"is_public"`
+	PublicUrlShared        bool     `json:"public_url_shared"`
+	DisplayAsBot           bool     `json:"display_as_bot"`
+	username               string   `json:"username"`
+	UrlPrivate             string   `json:"url_private"`
+	UrlPrivateDownload     string   `json:"url_private_download"`
+	Thumb64                string   `json:"thumb_64"`
+	Thumb80                string   `json:"thumb_80"`
+	Thumb360               string   `json:"thumb_360"`
+	Thumb360W              int64    `json:"thumb_360_w"`
+	Thumb360H              int64    `json:"thumb_360_h"`
+	Thumb480               string   `json:"thumb_480"`
+	Thumb480W              int64    `json:"thumb_480_w"`
+	Thumb480H              int64    `json:"thumb_480_h"`
+	Thumb160               string   `json:"thumb_160"`
+	ImageExifRotation      int64    `json:"image_exif_rotation"`
+	OriginalW              int64    `json:"original_w"`
+	OriginalH              int64    `json:"original_h"`
+	Pjpeg                  string   `json:"pjpeg"`
+	Permalink              string   `json:"permalink"`
+	PermalinkPublic        string   `json:"permalink_public"`
+	HasRichPreview         int64    `json:"has_rich_preview"`
+}
+
 // Message represents a message on Slack
 type Message struct {
 	Id               string       `json:"id"`
