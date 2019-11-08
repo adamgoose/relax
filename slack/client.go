@@ -186,7 +186,7 @@ func (c *Client) Start() error {
 			msg.User = User{}
 			msg.Channel = Channel{}
 
-			err := c.sendEvent("disable_bot", &msg, "", "", "", "")
+			err := c.sendEvent("disable_bot", &msg, "", "", "", "", msg.Files)
 			if err != nil {
 				return err
 			}
@@ -291,7 +291,7 @@ func (c *Client) callSlack(method string, params url.Values, expectedStatusCode 
 
 // sendEvent is a utility function that wraps event data in an Event struct
 // and sends them back to the user via Redis.
-func (c *Client) sendEvent(responseType string, msg *Message, text string, timestamp string, eventTimestamp string, threadTimestamp string) error {
+func (c *Client) sendEvent(responseType string, msg *Message, text string, timestamp string, eventTimestamp string, threadTimestamp string, files []File) error {
 	// If the eventTimestamp blank, then set a timestamp to the currentTime (this typically means)
 	// that it is the responsibility of the client to make sure that events are handled idempotently
 	if eventTimestamp == "" {
@@ -310,6 +310,7 @@ func (c *Client) sendEvent(responseType string, msg *Message, text string, times
 		ThreadTimestamp: threadTimestamp,
 		EventTimestamp:  eventTimestamp,
 		Attachments:     msg.Attachments,
+		Files:           files,
 		Namespace:       c.Namespace,
 		Provider:        "slack",
 	}
@@ -588,7 +589,7 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.User = c.data.Users[userId]
 			msg.Channel = c.data.Channels[channelId]
 
-			c.sendEvent("message_deleted", msg, msg.Text, msg.DeletedTimestamp, msg.Timestamp, msg.ThreadTimestamp)
+			c.sendEvent("message_deleted", msg, msg.Text, msg.DeletedTimestamp, msg.Timestamp, msg.ThreadTimestamp, msg.Files)
 
 		case "message_changed":
 			embeddedMessage := msg.EmbeddedMessage()
@@ -597,7 +598,7 @@ func (c *Client) handleMessage(msg *Message) {
 				userId = embeddedMessage.UserId()
 				msg.User = c.data.Users[userId]
 				msg.Channel = c.data.Channels[channelId]
-				c.sendEvent("message_edited", msg, embeddedMessage.Text, embeddedMessage.Timestamp, msg.Timestamp, msg.ThreadTimestamp)
+				c.sendEvent("message_edited", msg, embeddedMessage.Text, embeddedMessage.Timestamp, msg.Timestamp, msg.ThreadTimestamp, msg.Files)
 			}
 
 		// simple message
@@ -614,7 +615,7 @@ func (c *Client) handleMessage(msg *Message) {
 					"msg.Channel": msg.Channel,
 				}).Info("Sending message_new for this user and channel")
 
-				c.sendEvent("message_new", msg, msg.Text, msg.Timestamp, msg.Timestamp, msg.ThreadTimestamp)
+				c.sendEvent("message_new", msg, msg.Text, msg.Timestamp, msg.Timestamp, msg.ThreadTimestamp, msg.Files)
 			}
 		}
 
@@ -640,7 +641,7 @@ func (c *Client) handleMessage(msg *Message) {
 				}
 			}
 
-			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp)
+			c.sendEvent("reaction_added", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, msg.Files)
 		}
 
 	case "reaction_removed":
@@ -652,13 +653,13 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.User = c.data.Users[userId]
 			msg.Channel = c.data.Channels[channelId]
 
-			c.sendEvent("reaction_removed", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp)
+			c.sendEvent("reaction_removed", msg, msg.Reaction, embeddedItem.Timestamp, msg.EventTimestamp, msg.ThreadTimestamp, msg.Files)
 		}
 
 	case "team_join":
 		if err := json.Unmarshal(msg.RawUser, &msg.User); err == nil {
 			c.data.Users[msg.User.Id] = msg.User
-			c.sendEvent("team_joined", msg, "", "", "", "")
+			c.sendEvent("team_joined", msg, "", "", "", "", msg.Files)
 		}
 
 	case "im_created":
@@ -667,7 +668,7 @@ func (c *Client) handleMessage(msg *Message) {
 			c.data.Channels[msg.Channel.Id] = msg.Channel
 			msg.User = c.data.Users[msg.UserId()]
 
-			c.sendEvent("im_created", msg, "", "", "", "")
+			c.sendEvent("im_created", msg, "", "", "", "", msg.Files)
 		}
 
 	case "group_joined":
@@ -686,7 +687,7 @@ func (c *Client) handleMessage(msg *Message) {
 			msg.Channel = channel
 			// Don't send channel joined messages for upto a minute
 			timestamp := fmt.Sprintf("channel-joined-%d-%s", (time.Now().Unix()/60)*60, channel.Id)
-			c.sendEvent("channel_joined", msg, "", timestamp, timestamp, timestamp)
+			c.sendEvent("channel_joined", msg, "", timestamp, timestamp, timestamp, msg.Files)
 		}
 	}
 }
