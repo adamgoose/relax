@@ -1,5 +1,8 @@
 FROM golang:1.6
 
+RUN apt-get update \ 
+ && apt-get install --yes netcat redis-tools
+
 ARG user=relax
 ARG group=relax
 ARG uid=1000
