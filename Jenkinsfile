@@ -46,7 +46,6 @@ pipeline {
                 // checkout scm
 
                 script {
-                    sh 'yes | cp -r .aws-deploy/.[^.]* .aws-deploy/* .'
                     //Get git commit short-hash and set version
                     SHORT_HASH     = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                     CUSTOM_DATE    = sh(returnStdout: true, script: 'echo $(TZ=Asia/Kolkata date "+%m-%d-%H%M")').trim()
