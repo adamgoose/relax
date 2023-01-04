@@ -104,7 +104,7 @@ pipeline {
 
         stage('Deployment for Integration') {
             when {
-                branch 'msg_logger'
+                branch 'dev'
             }
             steps {
                 dir('platform-devops') {
