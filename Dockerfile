@@ -11,7 +11,7 @@ COPY . .
 RUN go get github.com/zerobotlabs/relax/slack \
   && go get github.com/zerobotlabs/relax/healthcheck \
   && go build \
-  && mv relax bin
+  && mv relax bin/
 RUN chown ${uid}:${gid} $GOPATH \
   && groupadd -g ${gid} ${group} \
   && useradd -d "$GOPATH" -u ${uid} -g ${gid} -m -s /bin/bash ${user} \
