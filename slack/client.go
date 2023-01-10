@@ -613,6 +613,7 @@ func (c *Client) handleMessage(msg *Message) {
 				log.WithFields(log.Fields{
 					"userId":      userId,
 					"channelId":   channelId,
+					"msg":         msg,
 					"msg.User":    msg.User,
 					"msg.Channel": msg.Channel,
 				}).Info("Sending message_new for this user and channel")
