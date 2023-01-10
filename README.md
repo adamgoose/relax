@@ -1,4 +1,4 @@
-## Relax
+## Relax 
 
 Relax is a Message Broker for Slack Bots. What does that mean?
 If you are running a "bot-as-a-service" for Slack, you have to maintain
