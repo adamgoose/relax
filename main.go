@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	fmt.Println("Testing code changes")
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "0"
