@@ -530,9 +530,9 @@ func startReadFromRedisPubSubLoop() {
 func (c *Client) startReadFromSlackLoop() {
 	for {
 		messageType, msg, err := c.conn.ReadMessage()
-		fmt.Println("Testing code changes", msg)
+		fmt.Println("Testing code changes", string(msg))
 		log.WithFields(log.Fields{
-			"msg": msg
+			"msg": msg,
 		}).Info("printing issue")
 		if err == nil {
 			if messageType == websocket.TextMessage {
