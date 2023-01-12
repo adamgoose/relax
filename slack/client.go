@@ -532,7 +532,7 @@ func (c *Client) startReadFromSlackLoop() {
 		messageType, msg, err := c.conn.ReadMessage()
 		fmt.Println("Testing code changes", string(msg))
 		log.WithFields(log.Fields{
-			"msg": msg,
+			"msg": string(msg),
 		}).Info("printing issue")
 		if err == nil {
 			if messageType == websocket.TextMessage {
