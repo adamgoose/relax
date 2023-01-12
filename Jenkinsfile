@@ -90,7 +90,7 @@ pipeline {
                         stage ('Delete Image') {
                             script {
                                 sh "docker container prune -f"
-                                sh "docker rmi -f \$(docker images | grep \${PROJECT} | awk '{print \$3}') || :"
+                                sh "docker rmi -f \$(docker images | grep \${PROJECT} | awk '{print \$3}') | uniq || :"
                             }
                         }
                     }
