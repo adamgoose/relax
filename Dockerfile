@@ -1,21 +1,16 @@
-FROM golang:1.6
-RUN apt-get update \
-  && apt-get install --force-yes -y net-tools netcat redis-tools
-ARG user=relax
-ARG group=relax
-ARG uid=1000
-ARG gid=1000
-ENV GOPATH=/opt/relax
-WORKDIR ${GOPATH}
-COPY . .
-RUN go get github.com/zerobotlabs/relax/slack \
-  && go get github.com/zerobotlabs/relax/healthcheck \
-  && go build \
-  && mkdir bin \
-  && mv relax bin/
-RUN chown ${uid}:${gid} $GOPATH \
-  && groupadd -g ${gid} ${group} \
-  && useradd -d "$GOPATH" -u ${uid} -g ${gid} -m -s /bin/bash ${user} \
-  && chown -R ${uid}:${gid} /usr/local /bin
-USER ${user}
-CMD ["bin/relax"]
+FROM golang:1.19-alpine3.17 as builder
+RUN apk add --update --no-cache alpine-sdk
+
+WORKDIR /work
+COPY go.mod go.sum /work/
+RUN go mod download
+
+COPY . /work
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" && \
+  strip ./relax
+
+FROM alpine:3.17
+RUN apk add --update --no-cache bash ca-certificates
+
+COPY --from=builder /work/relax /usr/local/bin/relax
+CMD ["relax"]

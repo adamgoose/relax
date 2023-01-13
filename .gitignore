@@ -80,3 +80,6 @@ config.json
 
 # Redis
 *.rdb
+
+# Dist
+relax
