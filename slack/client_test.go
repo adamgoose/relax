@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/gorilla/websocket"
-	. "github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/onsi/ginkgo"
-	. "github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/onsi/gomega"
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/gopkg.in/redis.v3"
+	"github.com/gorilla/websocket"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"gopkg.in/redis.v3"
 )
 
 func Test(t *testing.T) {
@@ -121,7 +121,6 @@ var _ = Describe("Client", func() {
 
 	Describe("InitClient - team_removed event", func() {
 		var server *httptest.Server
-		var existingSlackHost string
 		var wsServer *httptest.Server
 		var receiverChan chan []byte
 
@@ -225,7 +224,6 @@ var _ = Describe("Client", func() {
 	]
 }
 `, makeWsProto(wsServer.URL)), 200, nil)
-			existingSlackHost = os.Getenv("SLACK_HOST")
 			os.Setenv("SLACK_HOST", server.URL)
 			os.Setenv("RELAX_BOTS_KEY", "relax_redis_key")
 			os.Setenv("RELAX_BOTS_PUBSUB", "redis_pubsub_relax")
@@ -282,7 +280,6 @@ var _ = Describe("Client", func() {
 
 	Describe("InitClient - message event", func() {
 		var server *httptest.Server
-		var existingSlackHost string
 		var wsServer *httptest.Server
 		var receiverChan chan []byte
 
@@ -386,7 +383,6 @@ var _ = Describe("Client", func() {
 	]
 }
 `, makeWsProto(wsServer.URL)), 200, nil)
-			existingSlackHost = os.Getenv("SLACK_HOST")
 			os.Setenv("SLACK_HOST", server.URL)
 			os.Setenv("RELAX_BOTS_KEY", "relax_redis_key")
 			os.Setenv("RELAX_BOTS_PUBSUB", "redis_pubsub_relax")
@@ -486,7 +482,6 @@ var _ = Describe("Client", func() {
 
 	Describe("InitClients - team_added event", func() {
 		var server *httptest.Server
-		var existingSlackHost string
 		var wsServer *httptest.Server
 
 		BeforeEach(func() {
@@ -569,7 +564,6 @@ var _ = Describe("Client", func() {
     ]
 }
 `, makeWsProto(wsServer.URL)), 200, nil)
-			existingSlackHost = os.Getenv("SLACK_HOST")
 			os.Setenv("SLACK_HOST", server.URL)
 			os.Setenv("RELAX_BOTS_KEY", "relax_redis_key")
 			os.Setenv("RELAX_BOTS_PUBSUB", "redis_pubsub_relax")

@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/gorilla/websocket"
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/gopkg.in/redis.v3"
+	"github.com/gorilla/websocket"
+	"gopkg.in/redis.v3"
 )
 
 // Channel represents a channel in Slack

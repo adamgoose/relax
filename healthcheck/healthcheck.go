@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	log "github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/Sirupsen/logrus"
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/facebookgo/grace/gracehttp"
+	log "github.com/Sirupsen/logrus"
+	"github.com/facebookgo/grace/gracehttp"
 )
 
 type HealthCheckServer struct {

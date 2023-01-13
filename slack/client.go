@@ -13,15 +13,15 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/Sirupsen/logrus"
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/botmetrics/go-botmetrics"
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/cenkalti/backoff"
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/streamrail/concurrent-map"
+	log "github.com/Sirupsen/logrus"
+	"github.com/botmetrics/go-botmetrics"
+	"github.com/cenkalti/backoff"
+	cmap "github.com/streamrail/concurrent-map"
 	"github.com/zerobotlabs/relax/redisclient"
 	"github.com/zerobotlabs/relax/utils"
 
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/github.com/gorilla/websocket"
-	"github.com/zerobotlabs/relax/Godeps/_workspace/src/gopkg.in/redis.v3"
+	"github.com/gorilla/websocket"
+	"gopkg.in/redis.v3"
 )
 
 // This data structure holds all clients that are connected to Slack's RealTime API
