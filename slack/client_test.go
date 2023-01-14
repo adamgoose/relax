@@ -112,7 +112,7 @@ var _ = Describe("Client", func() {
 	var rc *redis.Client
 
 	BeforeEach(func() {
-		os.Setenv("REDIS_HOST", "localhost:6379")
+		// os.Setenv("REDIS_HOST", "localhost:6379")
 		os.Setenv("RELAX_MUTEX_KEY", "relax_mutex_key")
 
 		rc = newRedisClient()
