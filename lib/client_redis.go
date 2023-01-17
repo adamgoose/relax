@@ -9,6 +9,8 @@ import (
 )
 
 func (c *Client) SendEvent(e ClientEvent) error {
+	c.log.Debugw("sending event to redis", "event", e)
+
 	// Marshal the event
 	j, err := json.Marshal(e)
 	if err != nil {
@@ -24,8 +26,11 @@ func (c *Client) SendEvent(e ClientEvent) error {
 
 	// If it's already been locked, peace out
 	if !mutCmd.Val() {
+		c.log.Debugw("skipping: event already sent to redis", "event", e)
 		return nil
 	}
+
+	c.log.Infow("sending event to redis", "type", e.Type, "channel", e.ChannelUID, "user", e.UserUID)
 
 	// Send the event
 	return c.redis.RPush(c.ctx, c.eventsKey, string(j)).Err()
@@ -33,6 +38,7 @@ func (c *Client) SendEvent(e ClientEvent) error {
 
 func (c *Client) SendMessage(m *slack.OutgoingMessage) error {
 	m.ID = c.CommandID()
+	c.log.Debugw("sending message to slack", "message", m)
 
 	key := fmt.Sprintf("send_slack_message:%d", m.ID)
 	mutCmd := c.redis.HSetNX(c.ctx, c.mutexKey, key, "ok")
@@ -42,8 +48,11 @@ func (c *Client) SendMessage(m *slack.OutgoingMessage) error {
 
 	// If it's already been locked, peace out
 	if !mutCmd.Val() {
+		c.log.Debugw("skipping: message already sent to slack", "message", m)
 		return nil
 	}
+
+	c.log.Infow("sending message to slack", "type", m.Type, "channel", m.Channel)
 
 	c.rtm.SendMessage(m)
 	return nil

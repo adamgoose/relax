@@ -20,7 +20,7 @@ const NamespacedClientJSON = `{"team_id":"T01MYRKPPDK","token":"xoxb-99999999999
 func TestController(t *testing.T) {
 	Convey("Test Controller", t, func() {
 		r, mock := redismock.NewClientMock()
-		c := NewController(r)
+		c := NewController(r, log)
 
 		Convey("It instantiates a new controller", func() {
 			So(c, ShouldNotBeNil)
@@ -102,7 +102,7 @@ func TestController(t *testing.T) {
 			go st.Start()
 			defer st.Stop()
 
-			client, err := NewClient(ClientJSON, context.Background(), r, slack.OptionAPIURL(st.GetAPIURL()))
+			client, err := NewClient(ClientJSON, context.Background(), r, c.log, slack.OptionAPIURL(st.GetAPIURL()))
 			So(err, ShouldBeNil)
 			c.Clients.Store(TeamID, client)
 

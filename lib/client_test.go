@@ -21,7 +21,7 @@ func TestClient(t *testing.T) {
 			go st.Start()
 			defer st.Stop()
 
-			c, err := NewClient(ClientJSON, context.Background(), r, slack.OptionAPIURL(st.GetAPIURL()))
+			c, err := NewClient(ClientJSON, context.Background(), r, log, slack.OptionAPIURL(st.GetAPIURL()))
 			c.self = &slack.UserDetails{
 				ID: st.BotID,
 			}
@@ -108,7 +108,7 @@ func TestClient(t *testing.T) {
 		})
 
 		Convey("With a namespace", func() {
-			c, err := NewClient(NamespacedClientJSON, context.Background(), r)
+			c, err := NewClient(NamespacedClientJSON, context.Background(), r, log)
 			So(err, ShouldBeNil)
 
 			Convey("It calculates an index", func() {

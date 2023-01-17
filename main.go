@@ -2,14 +2,17 @@ package main
 
 import (
 	"context"
+	stdLog "log"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
 	"github.com/zerobotlabs/relax/lib"
+	"go.uber.org/zap"
 )
 
 func main() {
+	defer log.Sync()
+
 	r := redis.NewClient(&redis.Options{
 		Addr:       viper.GetString("REDIS_HOST"),
 		Password:   viper.GetString("REDIS_PASSWORD"),
@@ -22,17 +25,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Fatal(lib.NewController(r).Run())
+	lib.NewController(r, log).Run()
 }
+
+var log *zap.SugaredLogger
 
 func init() {
 	viper.AutomaticEnv()
-	viper.SetDefault("RELAX_LOG_LEVEL", "debug")
+	viper.SetDefault("RELAX_LOG_LEVEL", "info")
 
-	parsedLevel, err := log.ParseLevel(viper.GetString("RELAX_LOG_LEVEL"))
-	if err != nil {
-		parsedLevel = log.DebugLevel
+	lc := zap.NewProductionConfig()
+	ll, err := zap.ParseAtomicLevel(viper.GetString("RELAX_LOG_LEVEL"))
+	if err == nil {
+		lc.Level = ll
 	}
 
-	log.SetLevel(parsedLevel)
+	l, err := lc.Build()
+	if err != nil {
+		stdLog.Fatal(err)
+	}
+	log = l.Named("relax").Sugar()
 }

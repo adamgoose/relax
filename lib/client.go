@@ -10,6 +10,8 @@ import (
 	"github.com/lrita/cmap"
 	"github.com/slack-go/slack"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Client struct {
@@ -19,6 +21,7 @@ type Client struct {
 	Namespace string `json:"namespace"`
 
 	ctx       context.Context
+	log       *zap.SugaredLogger
 	redis     *redis.Client
 	rawKey    string
 	mutexKey  string
@@ -32,7 +35,7 @@ type Client struct {
 	stopChan chan bool
 }
 
-func NewClient(config string, ctx context.Context, redis *redis.Client, opts ...slack.Option) (*Client, error) {
+func NewClient(config string, ctx context.Context, redis *redis.Client, log *zap.SugaredLogger, opts ...slack.Option) (*Client, error) {
 	c := &Client{
 		ctx:       ctx,
 		redis:     redis,
@@ -43,14 +46,18 @@ func NewClient(config string, ctx context.Context, redis *redis.Client, opts ...
 	if err := json.Unmarshal([]byte(config), c); err != nil {
 		return nil, err
 	}
+	c.log = log.Named("client").With("team_id", c.TeamID, "namespace", c.Namespace)
 
+	sl, _ := zap.NewStdLogAt(c.log.Named("slack").Desugar(), zapcore.DebugLevel)
 	opts = append([]slack.Option{
-		slack.OptionDebug(viper.GetString("RELAX_LOG_LEVEL") == "debug"),
-		// slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
+		slack.OptionDebug(true), // filtered by zap's log level
+		slack.OptionLog(sl),
 	}, opts...)
 
 	c.slack = slack.New(c.Token, opts...)
 	c.rtm = c.slack.NewRTM(slack.RTMOptionPingInterval(5 * time.Second))
+
+	c.log.Info("instantiated client")
 
 	return c, nil
 }
@@ -75,6 +82,8 @@ func (c *Client) CommandID() int {
 }
 
 func (c *Client) Start() {
+	c.log.Info("starting client")
+
 	c.stopChan = make(chan bool)
 
 	go c.rtm.ManageConnection()
@@ -90,6 +99,8 @@ func (c *Client) Start() {
 }
 
 func (c *Client) Stop() error {
+	c.log.Info("stopping client")
+
 	if c.stopChan != nil {
 		c.stopChan <- true
 		c.stopChan = nil
