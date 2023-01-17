@@ -3,6 +3,7 @@ module github.com/zerobotlabs/relax
 go 1.19
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-redis/redismock/v8 v8.11.5
 	github.com/lrita/cmap v0.0.0-20220613164007-7fbf4a5bd437

@@ -2,4 +2,7 @@
 
 package main
 
-import "github.com/smartystreets/goconvey"
+import (
+	_ "github.com/davecgh/go-spew/spew"
+	_ "github.com/smartystreets/goconvey"
+)
