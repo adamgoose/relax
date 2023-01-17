@@ -131,6 +131,7 @@ func (c *Client) HandleMessage(msg slack.RTMEvent) {
 			e.ChannelUID = ev.Channel
 			e.Im = ev.Channel[0] == 'D'
 			e.Text = ev.Text
+			e.Attachments = ev.Attachments
 			e.Timestamp = ev.DeletedTimestamp
 			e.EventTimestamp = ev.Timestamp
 			e.ThreadTimestamp = ev.ThreadTimestamp
@@ -140,6 +141,7 @@ func (c *Client) HandleMessage(msg slack.RTMEvent) {
 			e.ChannelUID = ev.Channel
 			e.Im = ev.Channel[0] == 'D'
 			e.Text = ev.SubMessage.Text
+			e.Attachments = ev.Attachments
 			e.Timestamp = ev.SubMessage.Timestamp
 			e.EventTimestamp = ev.Timestamp
 			e.ThreadTimestamp = ev.ThreadTimestamp
@@ -154,6 +156,7 @@ func (c *Client) HandleMessage(msg slack.RTMEvent) {
 			e.ChannelUID = ev.Channel
 			e.Im = ev.Channel[0] == 'D'
 			e.Text = ev.Text
+			e.Attachments = ev.Attachments
 			e.Timestamp = ev.Timestamp
 			e.EventTimestamp = ev.Timestamp
 			e.ThreadTimestamp = ev.ThreadTimestamp
@@ -166,7 +169,6 @@ func (c *Client) HandleMessage(msg slack.RTMEvent) {
 		e.Text = ev.Reaction
 		e.Timestamp = ev.Item.Timestamp
 		e.EventTimestamp = ev.EventTimestamp
-		// e.Attachments
 	case *slack.ReactionRemovedEvent:
 		e.Type = "reaction_removed"
 		e.UserUID = ev.User
