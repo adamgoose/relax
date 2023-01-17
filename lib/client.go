@@ -47,9 +47,7 @@ func NewClient(config string, ctx context.Context, redis *redis.Client, opts ...
 		// slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
 	}, opts...)
 
-	c.slack = slack.New(c.Token,
-		opts...,
-	)
+	c.slack = slack.New(c.Token, opts...)
 	c.rtm = c.slack.NewRTM(slack.RTMOptionPingInterval(5 * time.Second))
 
 	return c, nil
@@ -147,14 +145,20 @@ func (c *Client) HandleMessage(msg slack.RTMEvent) {
 		// e.Attachments
 	case *slack.ReactionRemovedEvent:
 		e.Type = "reaction_removed"
+		e.UserUID = ev.User
+		e.ChannelUID = ev.Item.Channel
+		e.Im = ev.Item.Channel[0] == 'D'
 		e.Text = ev.Reaction
 		e.Timestamp = ev.Item.Timestamp
 		e.EventTimestamp = ev.EventTimestamp
 	case *slack.TeamJoinEvent:
 		e.Type = "team_joined"
+		e.UserUID = ev.User.ID
 		// user is added to meta users
 	case *slack.IMCreatedEvent:
 		e.Type = "im_created"
+		e.UserUID = ev.User
+		e.ChannelUID = ev.Channel.ID
 		e.Im = true
 		// channel is added to meta channels
 	case *slack.ChannelJoinedEvent:

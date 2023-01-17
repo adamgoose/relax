@@ -13,16 +13,14 @@ func (c *Client) SendEvent(e ClientEvent) error {
 		return err
 	}
 
-	// Work in a Redis Transaction
-	tx := c.redis.TxPipeline()
-	defer tx.Close()
-
 	// Grab an event mutex before sending (HA)
 	key := fmt.Sprintf("bot_message:%s:%s", e.ChannelUID, e.EventTimestamp)
-	mutCmd := tx.HSetNX(c.ctx, c.mutexKey, key, "ok")
+	mutCmd := c.redis.HSetNX(c.ctx, c.mutexKey, key, "ok")
 	if mutCmd == nil {
 		return errors.New("failed to set mutex")
 	}
+
+	// spew.Dump(string(j), key)
 
 	// If it's already been locked, peace out
 	if !mutCmd.Val() {
@@ -30,7 +28,7 @@ func (c *Client) SendEvent(e ClientEvent) error {
 	}
 
 	// Send the event
-	return tx.RPush(c.ctx, c.eventsKey, string(j)).Err()
+	return c.redis.RPush(c.ctx, c.eventsKey, string(j)).Err()
 }
 
 func (c *Client) SendRawEvent(event interface{}) error {
