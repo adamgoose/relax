@@ -46,12 +46,22 @@ func (c *Controller) onMessage(cmd *ControllerCommand) {
 	}
 
 	m := &slack.OutgoingMessage{}
-	if err := json.Unmarshal([]byte(cmd.Payload), m); err != nil {
-		return
+	err := json.Unmarshal([]byte(cmd.Payload), m)
+	if err != nil {
+		jerr, ok := err.(*json.UnmarshalTypeError)
+
+		if !ok {
+			// was another kind of err, better log and bail
+			return
+		}
+
+		if jerr.Field != "id" {
+			// it's not the ID field that threw the error
+			return
+		}
 	}
 
-	// TODO: mutex-safe send a slack message
-	client.rtm.SendMessage(m)
+	client.SendMessage(m)
 }
 
 func (c *Controller) onTeamAdded(cmd *ControllerCommand) {

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/lrita/cmap"
 	"github.com/slack-go/slack"
 	"github.com/spf13/viper"
 )
@@ -27,6 +28,7 @@ type Client struct {
 	rtm   *slack.RTM
 	self  *slack.UserDetails
 
+	counters cmap.Map[string, int]
 	stopChan chan bool
 }
 
@@ -59,6 +61,17 @@ func (c *Client) Index() string {
 	}
 
 	return fmt.Sprintf("%s-%s", c.Namespace, c.TeamID)
+}
+
+func (c *Client) CommandID() int {
+	id, ok := c.counters.Load("command_id")
+	if !ok {
+		id = 0
+	}
+
+	c.counters.Store("command_id", id+1)
+
+	return id + 1
 }
 
 func (c *Client) Start() {

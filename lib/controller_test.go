@@ -1,9 +1,13 @@
 package lib
 
 import (
+	"context"
 	"testing"
+	"time"
 
 	"github.com/go-redis/redismock/v8"
+	"github.com/slack-go/slack"
+	"github.com/slack-go/slack/slacktest"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/viper"
 )
@@ -90,6 +94,34 @@ func TestController(t *testing.T) {
 
 			_, ok = c.Clients.Load(TeamID)
 			So(ok, ShouldBeFalse)
+		})
+
+		Convey("It handles a message command", func() {
+			st := slacktest.NewTestServer()
+			st.SetBotName("relax")
+			go st.Start()
+			defer st.Stop()
+
+			client, err := NewClient(ClientJSON, context.Background(), r, slack.OptionAPIURL(st.GetAPIURL()))
+			So(err, ShouldBeNil)
+			c.Clients.Store(TeamID, client)
+
+			mock.ExpectHSetNX(client.mutexKey, "send_slack_message:1", "ok").SetVal(true)
+
+			go client.Start()
+			defer client.Stop()
+
+			c.onMessage(&ControllerCommand{
+				Id:      "37F29638-60F5-48F2-9996-15C9621F3E35",
+				Type:    "message",
+				TeamID:  TeamID,
+				Payload: `{"id":"37F29638-60F5-48F2-9996-15C9621F3E35","type":"typing","channel":"C99"}`,
+			})
+
+			time.Sleep(time.Second)
+
+			So(st.GetSeenInboundMessages(), ShouldContain, `{"id":1,"channel":"C99","type":"typing"}`)
+			So(mock.ExpectationsWereMet(), ShouldBeNil)
 		})
 	})
 }

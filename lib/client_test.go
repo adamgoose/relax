@@ -19,6 +19,7 @@ func TestClient(t *testing.T) {
 			st := slacktest.NewTestServer()
 			st.SetBotName("Relax")
 			go st.Start()
+			defer st.Stop()
 
 			c, err := NewClient(ClientJSON, context.Background(), r, slack.OptionAPIURL(st.GetAPIURL()))
 			c.self = &slack.UserDetails{
