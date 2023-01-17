@@ -1,38 +1,38 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"strconv"
+	"context"
 
-	"github.com/zerobotlabs/relax/healthcheck"
-	"github.com/zerobotlabs/relax/slack"
+	log "github.com/Sirupsen/logrus"
+	"github.com/go-redis/redis/v8"
+	"github.com/spf13/viper"
+	"github.com/zerobotlabs/relax/lib"
 )
 
 func main() {
-	fmt.Println("Testing code changes")
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "0"
-	}
-	portInt, err := strconv.Atoi(port)
+	r := redis.NewClient(&redis.Options{
+		Addr:       viper.GetString("REDIS_HOST"),
+		Password:   viper.GetString("REDIS_PASSWORD"),
+		DB:         0,
+		MaxRetries: 5,
+	})
+
+	_, err := r.Ping(context.Background()).Result()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	if redisCloudUrl := os.Getenv("REDISCLOUD_URL"); redisCloudUrl != "" {
-		os.Setenv("REDIS_URL", redisCloudUrl)
+	log.Fatal(lib.NewController(r).Run())
+}
+
+func init() {
+	viper.AutomaticEnv()
+	viper.SetDefault("RELAX_LOG_LEVEL", "debug")
+
+	parsedLevel, err := log.ParseLevel(viper.GetString("RELAX_LOG_LEVEL"))
+	if err != nil {
+		parsedLevel = log.DebugLevel
 	}
 
-	if os.Getenv("RELAX_BOTS_KEY") == "" || os.Getenv("RELAX_BOTS_PUBSUB") == "" ||
-		os.Getenv("RELAX_EVENTS_QUEUE") == "" || os.Getenv("REDIS_URL") == "" ||
-		os.Getenv("RELAX_MUTEX_KEY") == "" {
-		fmt.Printf("usage: RELAX_MUTEX_KEY=relax_mutex_key RELAX_BOTS_KEY=relax_bots_key RELAX_BOTS_PUBSUB=relax_bots_pubsub RELAX_EVENTS_QUEUE=relax_events_queue REDIS_URL=redis://localhost:6379 relax\n")
-		os.Exit(1)
-	}
-
-	slack.InitClients()
-
-	hcServer := &healthcheck.HealthCheckServer{}
-	hcServer.Start("0.0.0.0", uint16(portInt))
+	log.SetLevel(parsedLevel)
 }
