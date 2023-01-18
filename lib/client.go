@@ -88,6 +88,8 @@ func (c *Client) Start() {
 
 	go c.rtm.ManageConnection()
 
+	c.redis.HSet(c.ctx, c.mutexKey, fmt.Sprintf("bot-%s-started", c.TeamID), fmt.Sprintf("%d", time.Now().UnixNano()))
+
 	for {
 		select {
 		case msg := <-c.rtm.IncomingEvents:

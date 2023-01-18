@@ -2,6 +2,7 @@ package lib
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -34,6 +35,15 @@ func TestClient(t *testing.T) {
 
 			Convey("It calculates an index", func() {
 				So(c.Index(), ShouldEqual, TeamID)
+			})
+
+			Convey("It notifies us when it starts", func() {
+				mock.Regexp().ExpectHSet(c.mutexKey, fmt.Sprintf("bot-%s-started", c.TeamID), `\d+`)
+
+				go c.Start()
+
+				time.Sleep(time.Second)
+				So(mock.ExpectationsWereMet(), ShouldBeNil)
 			})
 
 			Convey("It responds to Slack events", func() {
