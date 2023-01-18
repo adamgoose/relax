@@ -2,9 +2,7 @@ package lib
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/lrita/cmap"
@@ -79,10 +77,8 @@ func (c *Controller) Run() error {
 		return err
 	}
 
-	go c.RunPubSubLoop()
-
-	time.Sleep(time.Minute)
-	return errors.New(c.botsKey)
+	c.RunPubSubLoop()
+	return nil
 }
 
 func init() {
