@@ -45,8 +45,14 @@ var log *zap.SugaredLogger
 func init() {
 	viper.AutomaticEnv()
 	viper.SetDefault("RELAX_LOG_LEVEL", "info")
+	viper.SetDefault("RELAX_LOG_FORMAT", "json")
 
-	lc := zap.NewProductionConfig()
+	var lc zap.Config
+	if viper.GetString("RELAX_LOG_FORMAT") == "json" {
+		lc = zap.NewProductionConfig()
+	} else {
+		lc = zap.NewDevelopmentConfig()
+	}
 	ll, err := zap.ParseAtomicLevel(viper.GetString("RELAX_LOG_LEVEL"))
 	if err == nil {
 		lc.Level = ll
