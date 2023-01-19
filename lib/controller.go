@@ -82,7 +82,6 @@ func (c *Controller) Run() error {
 }
 
 func init() {
-	viper.SetDefault("REDIS_HOST", "localhost:6379")
 	viper.SetDefault("RELAX_BOTS_KEY", "relax_bots_key")
 	viper.SetDefault("RELAX_BOTS_PUBSUB_KEY", "relax_bots_pubsub_key")
 	viper.RegisterAlias("RELAX_BOTS_PUBSUB_KEY", "RELAX_BOTS_PUBSUB")

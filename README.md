@@ -18,21 +18,6 @@ client](https://github.com/zerobotlabs/relax-rb) for you to use.
 
 You can also download pre-built binaries [here](#installation).
 
-If you are a Heroku user, you can deploy Relax right away with one click.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-
-**Known Issue:** When deploying using the "Deploy with Heroku" button,
-Heroku's Free Redis server takes a while to boot up, so your Relax
-deployment will take a while to come up as well. You can see Relax
-trying to connect to Heroku's Redis server by tailing logs `heroku logs
---tail -a <your-heroku-app-name>`. After a while, it should connect.
-
-## Coming Soon
-
-* Pluggable Messaging Backends
-
 ## Installation
 
 Although Relax is written in Go, it does not require any knowledge
@@ -43,36 +28,25 @@ Binaries are available for both OS X and Linux. Untar and gunzip the
 downloaded file and move the `relax` binary to your `$PATH` to start
 using.
 
-## Analytics for your Slackbot
-
-Relax now has optional [Botmetrics](https://getbotmetrics.com) analytics
-built in. If you want analytics for your Slack bot, set the
-`BOTMETRICS_ENABLED` environment variable to 'true', get an API key and
-a bot ID from botmetrics and set the `BOTMETRICS_API_KEY` and
-`BOTMETRICS_BOT_ID` environment variables set up and restart your Relax
-instances.
-
-## In Production Use
-
-Relax is used in production to power [Nestor](https://www.asknestor.me).
-
 ## Running Relax
 
 To run it, basically run `relax` (assuming it is in your $PATH).
 
-`RELAX_BOTS_KEY=relax_bots_key RELAX_BOTS_PUBSUB=relax_bots_pubsub RELAX_EVENTS_QUEUE=relax_events_queue REDIS_HOST=localhost:6379 relax`
-
 ## Setup
 
-The Relax message broker requires a few environment variables to be set up (these same environment variables are also used to set up the Relax Ruby Client). These environment variables are basically Redis keys that can be configured based on your specific needs.
+The Relax message broker requires a few environment variables to be set up (these same environment variables are also used to set up the Relax Ruby Client).
 
-`RELAX_BOTS_KEY`: This can be any string value and is used to store state about all Slack clients currently controlled by Relax in Redis.
+- `RELAX_LOG_LEVEL`: (`info`) Defines the log level
+- `RELAX_LOG_FORMAT`: (`json`) Anything other than json uses a columnar log output
+- `RELAX_SEND_BOT_REPLIES`: (`false`)
 
-`RELAX_BOTS_PUBSUB`: This can be any string value and is used by Relax clients to notify Relax brokers that a new Slack bot has been started.
 
-`RELAX_EVENTS_QUEUE`: This can be any string value and is used by Relax brokers to send events to the client.
+These environment variables are basically Redis keys that can be configured based on your specific needs.
 
-`RELAX_MUTEX_KEY`: This can be any string value and is used by Relax brokers to decide whether to send events back to clients.
+- `RELAX_BOTS_KEY`: (`relax_bots_key`) This can be any string value and is used to store state about all Slack clients currently controlled by Relax in Redis.
+- `RELAX_BOTS_PUBSUB_KEY` or `RELAX_BOTS_PUBSUB`: (`relax_bots_pubsub_key`) This can be any string value and is used by Relax clients to notify Relax brokers that a new Slack bot has been started.
+- `RELAX_EVENTS_KEY` or `RELAX_EVENTS_QUEUE`: (`relax_events_key`) This can be any string value and is used by Relax brokers to send events to the client.
+- `RELAX_MUTEX_KEY`: (`relax_mutex_key`) This can be any string value and is used by Relax brokers to decide whether to send events back to clients.
 
 ## Protocol
 
@@ -197,3 +171,31 @@ this is always "slack".
 This is a string value and represents the time at which an event occurs.
 In the case of `disable_bot`, `team_joined` and `im_created` events, it is
 an empty string.
+
+## Local Development
+
+```bash
+# Run a Redis container
+docker run -p 6379:6379 -n relax-redis -d redis
+
+# Run Relax
+RELAX_LOG_LEVEL=debug RELAX_LOG_FORMAT=cols go run .
+
+# Interact with it
+alias relax-redis="docker exec -it relax-redis redis-cli"
+export SLACK_TEAM=T...
+export SLACK_TOKEN=xoxb-...
+export SLACK_CHANNEL=C...
+
+# Add a team
+relax-redis hset relax_bots_key $SLACK_TEAM "{\"team_id\":\"$SLACK_TEAM\",\"token\":\"$SLACK_TOKEN\"}"
+relax-redis publish relax_bots_pubsub_key "{\"type\":\"team_added\",\"team_id\":\"$SLACK_TEAM\"}"
+
+# Indicate Typing
+relax-redis publish relax_bots_pubsub_key "{\"type\":\"message\",\"team_id\":\"$SLACK_TEAM\",\"payload\":\"{\\\"type\\\":\\\"typing\\\",\\\"channel\\\":\\\"$SLACK_CHANNEL\\\"}\"}"
+
+# Run Test Suite
+go run github.com/smartystreets/goconvey
+# .. or
+go test ./...
+```

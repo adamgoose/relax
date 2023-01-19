@@ -23,7 +23,6 @@ type Client struct {
 	ctx       context.Context
 	log       *zap.SugaredLogger
 	redis     *redis.Client
-	rawKey    string
 	mutexKey  string
 	eventsKey string
 
@@ -39,7 +38,6 @@ func NewClient(config string, ctx context.Context, redis *redis.Client, log *zap
 	c := &Client{
 		ctx:       ctx,
 		redis:     redis,
-		rawKey:    viper.GetString("RELAX_RAW_KEY"),
 		mutexKey:  viper.GetString("RELAX_MUTEX_KEY"),
 		eventsKey: viper.GetString("RELAX_EVENTS_KEY"),
 	}
