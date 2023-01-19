@@ -123,8 +123,15 @@ func (c *Client) HandleMessage(msg slack.RTMEvent) {
 	}
 
 	switch ev := msg.Data.(type) {
+	// Collect the Bot ID on Connect
 	case *slack.HelloEvent:
 		c.self = c.rtm.GetInfo().User
+
+	// I don't get access to the actual event here. Can be one of:
+	// invalid_auth, account_inactive, not_authed, or token_revoked
+	case *slack.InvalidAuthEvent:
+		e.Type = "disable_bot"
+
 	case *slack.MessageEvent:
 		switch ev.SubType {
 		case slack.MsgSubTypeMessageDeleted:
@@ -199,6 +206,7 @@ func (c *Client) HandleMessage(msg slack.RTMEvent) {
 		e.ThreadTimestamp = timestamp
 	default:
 		// ignore other events
+		c.log.Debugw("ignoring slack event", "event", msg)
 	}
 
 	if e.Type != "" {
