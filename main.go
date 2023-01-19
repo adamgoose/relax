@@ -5,7 +5,6 @@ import (
 	stdLog "log"
 	"net/url"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
 	"github.com/zerobotlabs/relax/lib"
@@ -19,8 +18,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to parse redis url %s: %v", viper.GetString("REDIS_URL"), err)
 	}
-
-	spew.Dump()
 
 	ro := &redis.Options{
 		Addr:       u.Host,
